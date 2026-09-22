@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Settings — Task Efficiency Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Settings</h1>
+  <p>These values drive every recommendation. Changing them here changes future analysis results — nothing is hidden or hardcoded.</p>
+</div>
+
+<div class="card" style="max-width: 560px;">
+  <h3>Scoring weights</h3>
+  <p>Must add up to 1.0 (100%). Cost and time favor the cheaper/faster option; quality favors the higher-rated one.</p>
+  <div class="weights-row">
+    <div class="field">
+      <label for="weight-cost">Cost</label>
+      <input type="number" id="weight-cost" step="0.05" min="0" max="1" value="{{ settings['weights']['cost'] }}">
+    </div>
+    <div class="field">
+      <label for="weight-time">Time</label>
+      <input type="number" id="weight-time" step="0.05" min="0" max="1" value="{{ settings['weights']['time'] }}">
+    </div>
+    <div class="field">
+      <label for="weight-quality">Quality</label>
+      <input type="number" id="weight-quality" step="0.05" min="0" max="1" value="{{ settings['weights']['quality'] }}">
+    </div>
+  </div>
+
+  <h3>Minimum quality threshold</h3>
+  <p>Either side is automatically excluded from recommendation if its average quality falls below this.</p>
+  <div class="field" style="max-width: 160px;">
+    <input type="number" id="min-quality" step="0.5" min="0" max="10" value="{{ settings['min_quality_threshold'] }}">
+  </div>
+
+  <h3>Default monthly volume</h3>
+  <p>Used on the Dashboard to estimate aggregate savings before you run a task-specific analysis.</p>
+  <div class="field" style="max-width: 160px;">
+    <input type="number" id="default-volume" step="100" min="0" value="{{ settings['default_monthly_volume'] }}">
+  </div>
+
+  <button id="save-settings-btn">Save settings</button>
+  <div id="settings-status"></div>
+</div>
+
+<div class="card" style="max-width: 560px; margin-top: 20px;">
+  <h3>AI model pricing (reference)</h3>
+  <p>Per-1,000-token pricing used when generating sample AI cost data. Update <code>config.py</code> directly to change this — kept out of the UI for the MVP to avoid accidental edits to core cost assumptions.</p>
+  <table>
+    <thead><tr><th>Model</th><th class="num">₹ / 1K input tokens</th><th class="num">₹ / 1K output tokens</th></tr></thead>
+    <tbody>
+      {% for model, pricing in settings['ai_pricing'].items() %}
+      <tr>
+        <td>{{ model }}</td>
+        <td class="num">{{ pricing['price_per_1k_input'] }}</td>
+        <td class="num">{{ pricing['price_per_1k_output'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById("save-settings-btn").addEventListener("click", async () => {
+  const cost = parseFloat(document.getElementById("weight-cost").value);
+  const time = parseFloat(document.getElementById("weight-time").value);
+  const quality = parseFloat(document.getElementById("weight-quality").value);
+  const statusEl = document.getElementById("settings-status");
+
+  const sum = cost + time + quality;
+  if (Math.abs(sum - 1.0) > 0.01) {
+    statusEl.innerHTML = `<div class="status-msg err">Weights must add up to 1.0 (currently ${sum.toFixed(2)}).</div>`;
+    return;
+  }
+
+  const body = {
+    weights: { cost, time, quality },
+    min_quality_threshold: parseFloat(document.getElementById("min-quality").value),
+    default_monthly_volume: parseInt(document.getElementById("default-volume").value, 10),
+  };
+
+  const res = await fetch("/api/settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  statusEl.innerHTML = res.ok
+    ? `<div class="status-msg ok">${data.message}</div>`
+    : `<div class="status-msg err">${data.error || "Could not save settings."}</div>`;
+});
+</script>
+{% endblock %}

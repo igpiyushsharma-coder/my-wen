@@ -1,0 +1,4 @@
+name,description,category
+customer_email,Replying to a routine customer support email,Customer Support
+document_summary,Summarizing a business document into key points,Content Processing
+data_extraction,"Extracting structured fields (names, dates, amounts) from a document",Data Entry

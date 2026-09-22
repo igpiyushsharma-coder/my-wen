@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Data — Task Efficiency Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Data</h1>
+  <p>Upload your own human or AI performance records as CSV, or check how much sample data is currently loaded per task.</p>
+</div>
+
+<div class="section">
+  <div class="section-title"><h2>Current data by task</h2></div>
+  <div class="card">
+    {% if tasks|length == 0 %}
+    <div class="empty-state">No tasks yet.</div>
+    {% else %}
+    <table>
+      <thead><tr><th>Task</th><th>Category</th><th class="num">Human records</th><th class="num">AI records</th></tr></thead>
+      <tbody>
+        {% for t in tasks %}
+        <tr>
+          <td><strong>{{ t['name'] }}</strong></td>
+          <td>{{ t['category'] }}</td>
+          <td class="num">{{ t['human_count'] }}</td>
+          <td class="num">{{ t['ai_count'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title"><h2>Upload human performance CSV</h2></div>
+  <div class="card">
+    <p>Required columns: <code>task, worker_id, difficulty, time_seconds, labor_cost, quality_accuracy, quality_completeness, quality_clarity, quality_consistency</code></p>
+    <p class="note">difficulty must be "routine" or "complex". Each quality_* column is 1–10; the overall quality score is calculated automatically as their average.</p>
+    <input type="file" id="human-csv-input" accept=".csv">
+    <button id="human-upload-btn" style="margin-top: 12px;">Upload</button>
+    <div id="human-upload-status"></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title"><h2>Upload AI performance CSV</h2></div>
+  <div class="card">
+    <p>Required columns: <code>task, model_name, difficulty, time_seconds, input_tokens, output_tokens, api_cost, quality_accuracy, quality_completeness, quality_clarity, quality_consistency</code></p>
+    <p class="note">Same rubric and difficulty rules as the human CSV above.</p>
+    <input type="file" id="ai-csv-input" accept=".csv">
+    <button id="ai-upload-btn" style="margin-top: 12px;">Upload</button>
+    <div id="ai-upload-status"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function wireUpload(fileInputId, buttonId, statusId, endpoint) {
+  document.getElementById(buttonId).addEventListener("click", async () => {
+    const fileInput = document.getElementById(fileInputId);
+    const statusEl = document.getElementById(statusId);
+    if (!fileInput.files.length) {
+      statusEl.innerHTML = '<div class="status-msg err">Choose a CSV file first.</div>';
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    statusEl.innerHTML = '<div class="status-msg">Uploading…</div>';
+    try {
+      const res = await fetch(endpoint, { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        statusEl.innerHTML = `<div class="status-msg ok">${data.message}</div>`;
+      } else {
+        statusEl.innerHTML = `<div class="status-msg err">${data.error}</div>`;
+      }
+    } catch (err) {
+      statusEl.innerHTML = `<div class="status-msg err">Upload failed: ${err}</div>`;
+    }
+  });
+}
+wireUpload("human-csv-input", "human-upload-btn", "human-upload-status", "/api/upload/human");
+wireUpload("ai-csv-input", "ai-upload-btn", "ai-upload-status", "/api/upload/ai");
+</script>
+{% endblock %}

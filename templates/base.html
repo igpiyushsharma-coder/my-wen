@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Task Efficiency Optimizer{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='20260916-premium') }}">
+</head>
+<body>
+  <div class="shell">
+    <aside class="side-nav">
+      <div class="brand">
+        <span class="brand-mark">H·A</span>
+        <span class="brand-name">Task Efficiency<span>Optimizer</span></span>
+      </div>
+      <nav>
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.path == '/dashboard' else '' }}">Dashboard</a>
+        <a href="{{ url_for('tasks') }}" class="{{ 'active' if request.path == '/tasks' else '' }}">Tasks</a>
+        <a href="{{ url_for('analysis') }}" class="{{ 'active' if request.path == '/analysis' else '' }}">Analysis</a>
+        <a href="{{ url_for('data_page') }}" class="{{ 'active' if request.path == '/data' else '' }}">Data</a>
+        <a href="{{ url_for('settings_page') }}" class="{{ 'active' if request.path == '/settings' else '' }}">Settings</a>
+      </nav>
+      <div class="side-footer">
+        <span class="dot"></span> Demo mode &mdash; sample data
+      </div>
+    </aside>
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

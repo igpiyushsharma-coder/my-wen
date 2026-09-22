@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Task Efficiency Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header hero-header">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> Intelligence workspace</div>
+    <h1>Make every task<br><em>work smarter.</em></h1>
+    <p>See where human expertise and AI efficiency create the most value — with clear numbers behind every recommendation.</p>
+  </div>
+  <div class="hero-orbit" aria-hidden="true">
+    <span class="orbit-ring orbit-ring-one"></span>
+    <span class="orbit-ring orbit-ring-two"></span>
+    <span class="orbit-core">H<span>×</span>A</span>
+  </div>
+</div>
+
+<div class="dashboard-status"><span class="status-pulse"></span> Live workspace <span class="status-divider"></span> Updated just now</div>
+
+<div class="metric-strip" id="metric-strip">
+  <div class="metric"><div class="value">—</div><div class="label">Tasks analyzed</div></div>
+  <div class="metric accent-ai"><div class="value">—</div><div class="label">AI recommended</div></div>
+  <div class="metric"><div class="value">—</div><div class="label">Human recommended</div></div>
+  <div class="metric"><div class="value">—</div><div class="label">Hybrid recommended</div></div>
+  <div class="metric accent-ai"><div class="value">—</div><div class="label">Est. monthly savings</div></div>
+  <div class="metric accent-ai"><div class="value">—</div><div class="label">Est. yearly savings</div></div>
+</div>
+
+<p class="note" id="volume-note"></p>
+
+<div class="section">
+  <div class="section-title"><h2>Human vs. AI, by task</h2></div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Average cost (₹)</h3>
+      <div class="chart-box"><canvas id="costChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Average time (seconds)</h3>
+      <div class="chart-box"><canvas id="timeChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Average quality (/10)</h3>
+      <div class="chart-box"><canvas id="qualityChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title"><h2>Recommendation distribution</h2></div>
+  <div class="card" style="max-width: 420px;">
+    <div class="chart-box"><canvas id="recChart"></canvas></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js', v='20260916-ai-scale') }}"></script>
+{% endblock %}

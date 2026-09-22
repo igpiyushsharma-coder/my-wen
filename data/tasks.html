@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Tasks — Task Efficiency Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Tasks</h1>
+  <p>Every business task currently tracked in the system. Open Analysis to compare human and AI performance for any of these.</p>
+</div>
+
+<div class="card">
+  {% if tasks|length == 0 %}
+    <div class="empty-state">No tasks yet — upload data on the Data page to get started.</div>
+  {% else %}
+  <table>
+    <thead>
+      <tr><th>Task</th><th>Category</th><th>Description</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for t in tasks %}
+      <tr>
+        <td><strong>{{ t['name'] }}</strong></td>
+        <td>{{ t['category'] }}</td>
+        <td>{{ t['description'] }}</td>
+        <td><a href="{{ url_for('analysis') }}?task_id={{ t['id'] }}">Analyze this task</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

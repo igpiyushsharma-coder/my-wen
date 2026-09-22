@@ -1,0 +1,19 @@
+{
+  "weights": {
+    "cost": 0.4,
+    "time": 0.3,
+    "quality": 0.3
+  },
+  "min_quality_threshold": 7.0,
+  "default_monthly_volume": 10000,
+  "ai_pricing": {
+    "Model-A": {
+      "price_per_1k_input": 0.05,
+      "price_per_1k_output": 0.15
+    },
+    "Model-B": {
+      "price_per_1k_input": 0.08,
+      "price_per_1k_output": 0.24
+    }
+  }
+}

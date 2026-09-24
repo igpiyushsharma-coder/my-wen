@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="H*A Task Efficiency OPTIMIZER helps Indian enterprises make confident human and AI workforce decisions.">
+  <title>H*A — Task Efficiency OPTIMIZER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root {
+      --ink: #f5f5f4;
+      --muted: #98989f;
+      --dim: #686870;
+      --line: #27272a;
+      --surface: rgba(24, 24, 29, .72);
+      --coral: #e0564c;
+      --coral-light: #f17c70;
+      --serif: "Fraunces", Georgia, serif;
+      --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background:
+        radial-gradient(900px 520px at 74% -12%, rgba(224, 86, 76, .11), transparent 62%),
+        radial-gradient(700px 500px at 0% 48%, rgba(90, 90, 106, .08), transparent 65%),
+        #0f0f12;
+      color: var(--ink);
+      font-family: var(--sans);
+    }
+    .display { font-family: var(--serif); }
+    .hairline { border-color: var(--line); }
+    .glass {
+      background: linear-gradient(140deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+      border: 1px solid rgba(255,255,255,.095);
+      box-shadow: 0 20px 70px rgba(0,0,0,.18), inset 0 1px rgba(255,255,255,.035);
+      backdrop-filter: blur(18px);
+    }
+    .grid-texture {
+      background-image: linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 75%);
+    }
+    .button-coral {
+      background: var(--coral);
+      box-shadow: 0 10px 28px rgba(224, 86, 76, .2);
+      transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .button-coral:hover { background: var(--coral-light); box-shadow: 0 12px 34px rgba(224,86,76,.3); transform: translateY(-2px); }
+    .button-dark { transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+    .button-dark:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.3); transform: translateY(-2px); }
+    .feature-card { transition: transform .25s ease, border-color .25s ease, background .25s ease; }
+    .feature-card:hover { background: rgba(255,255,255,.065); border-color: rgba(224,86,76,.4); transform: translateY(-4px); }
+    .metric-divider:not(:last-child) { border-right: 1px solid var(--line); }
+    @media (max-width: 767px) {
+      .metric-divider:nth-child(2n) { border-right: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-[#e0564c] selection:text-white">
+  <div class="pointer-events-none fixed inset-0 -z-10 grid-texture opacity-70"></div>
+
+  <header class="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-10">
+    <a href="{{ url_for('index') }}" class="flex items-center gap-3" aria-label="H*A Task Efficiency Optimizer home">
+      <span class="display flex h-10 w-10 items-center justify-center rounded-xl bg-[#252529] text-sm font-semibold tracking-tight text-white ring-1 ring-white/10">H*A</span>
+      <span class="text-[11px] font-semibold uppercase leading-tight tracking-[.14em] text-zinc-200 sm:text-xs">Task Efficiency<br><span class="text-zinc-500">OPTIMIZER</span></span>
+    </a>
+    <nav class="hidden items-center gap-8 text-sm text-zinc-400 lg:flex" aria-label="Main navigation">
+      <a class="transition-colors hover:text-white" href="#features">Features</a>
+      <a class="transition-colors hover:text-white" href="#india-impact">India Impact</a>
+      <a class="transition-colors hover:text-white" href="#savings">Savings Calculator</a>
+      <a class="transition-colors hover:text-white" href="#docs">Docs</a>
+    </nav>
+    <a href="{{ url_for('dashboard') }}" class="button-coral rounded-full px-4 py-2.5 text-xs font-semibold text-white sm:px-5 sm:text-sm">Go to Dashboard <span class="ml-1">↗</span></a>
+  </header>
+
+  <main>
+    <section class="relative mx-auto max-w-7xl px-6 pb-20 pt-20 lg:px-10 lg:pb-28 lg:pt-28">
+      <div class="max-w-3xl">
+        <div class="mb-7 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-zinc-400 sm:text-xs">
+          <span class="h-1.5 w-1.5 rounded-full bg-[#e0564c] shadow-[0_0_12px_#e0564c]"></span>
+          Intelligence workspace for India
+        </div>
+        <h1 class="display max-w-3xl text-6xl leading-[.95] tracking-[-.055em] text-white sm:text-7xl lg:text-[6.8rem]">Know before you <em class="text-[#e0564c] not-italic">automate.</em></h1>
+        <p class="mt-8 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">See where human expertise and AI efficiency create the most value for Indian enterprises — with clear numbers behind every recommendation.</p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href="{{ url_for('analysis') }}" class="button-coral rounded-full px-6 py-3.5 text-sm font-semibold text-white">Run an analysis <span class="ml-2">↗</span></a>
+          <a href="{{ url_for('tasks') }}" class="button-dark rounded-full border border-zinc-700 bg-zinc-900/60 px-6 py-3.5 text-sm font-medium text-zinc-200">Explore tasks</a>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute right-8 top-14 hidden h-72 w-72 rounded-full border border-white/[.04] lg:block">
+        <div class="absolute inset-8 rounded-full border border-[#e0564c]/15"></div>
+        <div class="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e0564c] shadow-[0_0_35px_12px_rgba(224,86,76,.28)]"></div>
+      </div>
+    </section>
+
+    <section id="savings" class="mx-auto max-w-7xl px-6 lg:px-10">
+      <div class="glass grid grid-cols-2 overflow-hidden rounded-2xl md:grid-cols-3 lg:grid-cols-6">
+        <div class="metric-divider px-5 py-6 sm:px-6"><div class="display text-3xl text-white">4</div><div class="mt-1 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Tasks analyzed</div></div>
+        <div class="metric-divider px-5 py-6 sm:px-6"><div class="display text-3xl text-[#f17c70]">1</div><div class="mt-1 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">AI recommended</div></div>
+        <div class="metric-divider px-5 py-6 sm:px-6"><div class="display text-3xl text-white">3</div><div class="mt-1 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Human recommended</div></div>
+        <div class="metric-divider px-5 py-6 sm:px-6"><div class="display text-3xl text-white">0</div><div class="mt-1 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Hybrid</div></div>
+        <div class="metric-divider col-span-2 px-5 py-6 sm:px-6 md:col-span-1"><div class="display text-xl text-zinc-200 sm:text-2xl">₹7,03,494</div><div class="mt-1 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Est. monthly savings</div></div>
+        <div class="col-span-2 border-t border-zinc-800 px-5 py-6 sm:px-6 md:col-span-3 md:border-t-0 lg:col-span-1"><div class="display text-xl font-semibold text-[#f17c70] sm:text-2xl">₹84,41,938.2</div><div class="mt-1 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-500">Est. yearly savings</div></div>
+      </div>
+    </section>
+
+    <section id="features" class="mx-auto max-w-7xl px-6 pb-24 pt-28 lg:px-10 lg:pb-32">
+      <div id="india-impact" class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div><p class="mb-3 text-[10px] font-semibold uppercase tracking-[.2em] text-[#e0564c]">Built for the real India</p><h2 class="display text-4xl tracking-[-.04em] text-white sm:text-5xl">Intelligence with context.</h2></div>
+        <p class="max-w-sm text-sm leading-6 text-zinc-500">A decision layer that respects language, connectivity, budgets, and the people behind every task.</p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <article class="feature-card glass rounded-2xl p-7 sm:p-8"><div class="mb-12 flex h-10 w-10 items-center justify-center rounded-xl bg-[#e0564c]/10 text-xl text-[#f17c70]">◌</div><h3 class="display text-2xl text-white">Vernacular &amp; Voice Workflows</h3><p class="mt-3 max-w-md text-sm leading-6 text-zinc-400">Local language &amp; voice task inputs for Tier-2/3 ground staff. Bhashini integration ready.</p></article>
+        <article class="feature-card glass rounded-2xl p-7 sm:p-8"><div class="mb-12 flex h-10 w-10 items-center justify-center rounded-xl bg-[#e0564c]/10 text-xl text-[#f17c70]">₹</div><h3 class="display text-2xl text-white">INR (₹) Tier-wise Cost Rubric</h3><p class="mt-3 max-w-md text-sm leading-6 text-zinc-400">Real-time decision rubrics calibrated specifically for Indian MSME budgets and labor rates.</p></article>
+        <article class="feature-card glass rounded-2xl p-7 sm:p-8"><div class="mb-12 flex h-10 w-10 items-center justify-center rounded-xl bg-[#e0564c]/10 text-xl text-[#f17c70]">◍</div><h3 class="display text-2xl text-white">WhatsApp &amp; Low-Bandwidth Mode</h3><p class="mt-3 max-w-md text-sm leading-6 text-zinc-400">Real-time task alerts via WhatsApp for regions with low connectivity.</p></article>
+        <article class="feature-card glass rounded-2xl p-7 sm:p-8"><div class="mb-12 flex h-10 w-10 items-center justify-center rounded-xl bg-[#e0564c]/10 text-xl text-[#f17c70]">↗</div><h3 class="display text-2xl text-white">Skill India &amp; Upskilling Rubric</h3><p class="mt-3 max-w-md text-sm leading-6 text-zinc-400">Protects jobs by routing complex tasks to humans while upgrading workforce capabilities.</p></article>
+      </div>
+    </section>
+
+    <section id="docs" class="mx-auto max-w-7xl px-6 pb-28 lg:px-10">
+      <div class="glass flex flex-col items-start justify-between gap-8 rounded-3xl p-8 sm:p-12 lg:flex-row lg:items-center">
+        <div><p class="mb-3 text-[10px] font-semibold uppercase tracking-[.2em] text-zinc-500">The next decision is yours</p><h2 class="display max-w-xl text-4xl leading-tight tracking-[-.04em] text-white sm:text-5xl">Ready to optimize your workforce costs in ₹?</h2></div>
+        <a href="{{ url_for('dashboard') }}" class="button-coral shrink-0 rounded-full px-6 py-3.5 text-sm font-semibold text-white">Launch Intelligence Workspace <span class="ml-2">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mx-auto flex max-w-7xl flex-col gap-3 border-t hairline px-6 py-7 text-xs text-zinc-600 sm:flex-row sm:items-center sm:justify-between lg:px-10">
+    <span>© 2025 H*A Task Efficiency OPTIMIZER</span>
+    <span>SIH Hackathon project · Built for India</span>
+  </footer>
+</body>
+</html>

@@ -6,7 +6,7 @@ This is the Flask web server -- it ties every service module together
 into an actual website you can click around in.
 
 PAGES (rendered HTML):
-  /                -> redirects to /dashboard
+  /                -> public landing page
   /dashboard       -> overview: totals, recommendation breakdown, charts
   /tasks           -> list of all tasks in the database
   /analysis        -> pick a task + monthly volume -> see full analysis
@@ -60,8 +60,7 @@ def get_db():
 
 @app.route("/")
 def index():
-    from flask import redirect, url_for
-    return redirect(url_for("dashboard"))
+    return render_template("landing.html")
 
 
 @app.route("/dashboard")

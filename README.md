@@ -138,7 +138,7 @@ python3 generate_sample_data.py
 python3 setup_database.py
 python3 app.py
 ```
-Open **http://127.0.0.1:5000**.
+Open **https://my-wen.onrender.com**.
 
 ## 11. Demo mode
 

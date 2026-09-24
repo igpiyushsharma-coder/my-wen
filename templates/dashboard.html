@@ -5,8 +5,12 @@
 <div class="page-header hero-header">
   <div class="hero-copy">
     <div class="eyebrow"><span class="eyebrow-dot"></span> Intelligence workspace</div>
-    <h1>Make every task<br><em>work smarter.</em></h1>
+    <h1>Know before you<br><em>automate.</em></h1>
     <p>See where human expertise and AI efficiency create the most value — with clear numbers behind every recommendation.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ url_for('analysis') }}">Run an analysis <span>↗</span></a>
+      <a class="btn btn-outline" href="{{ url_for('tasks') }}">Explore tasks</a>
+    </div>
   </div>
   <div class="hero-orbit" aria-hidden="true">
     <span class="orbit-ring orbit-ring-one"></span>
@@ -22,8 +26,8 @@
   <div class="metric accent-ai"><div class="value">—</div><div class="label">AI recommended</div></div>
   <div class="metric"><div class="value">—</div><div class="label">Human recommended</div></div>
   <div class="metric"><div class="value">—</div><div class="label">Hybrid recommended</div></div>
-  <div class="metric accent-ai"><div class="value">—</div><div class="label">Est. monthly savings</div></div>
-  <div class="metric accent-ai"><div class="value">—</div><div class="label">Est. yearly savings</div></div>
+  <div class="metric accent-gold"><div class="value">—</div><div class="label">Est. monthly savings</div></div>
+  <div class="metric accent-gold"><div class="value">—</div><div class="label">Est. yearly savings</div></div>
 </div>
 
 <p class="note" id="volume-note"></p>
@@ -55,5 +59,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/dashboard.js', v='20260916-ai-scale') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js', v='20260924-vintage-luxury') }}"></script>
 {% endblock %}

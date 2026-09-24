@@ -7,6 +7,24 @@
   <p>Every business task currently tracked in the system. Open Analysis to compare human and AI performance for any of these.</p>
 </div>
 
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="kicker">Tracked</div>
+    <div class="value">{{ tasks|length }}</div>
+    <div class="meta">active tasks</div>
+  </div>
+  <div class="summary-card ai">
+    <div class="kicker">Categories</div>
+    <div class="value">{{ tasks|map(attribute='category')|unique|list|length }}</div>
+    <div class="meta">segments mapped</div>
+  </div>
+  <div class="summary-card">
+    <div class="kicker">Ready</div>
+    <div class="value">{{ tasks|length if tasks else 0 }}</div>
+    <div class="meta">tasks ready for review</div>
+  </div>
+</div>
+
 <div class="card">
   {% if tasks|length == 0 %}
     <div class="empty-state">No tasks yet — upload data on the Data page to get started.</div>

@@ -6,7 +6,9 @@
   <title>{% block title %}Task Efficiency Optimizer{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='20260916-premium') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v='20260924-vintage-luxury') }}">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
   <div class="shell">
@@ -32,5 +34,9 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   {% block scripts %}{% endblock %}
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+    </script>
 </body>
 </html>

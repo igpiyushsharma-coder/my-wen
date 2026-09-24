@@ -7,6 +7,24 @@
   <p>Pick a task and a monthly volume to see the full human-vs-AI comparison, the recommendation, and the projected savings.</p>
 </div>
 
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="kicker">Tasks</div>
+    <div class="value">{{ tasks|length }}</div>
+    <div class="meta">available for comparison</div>
+  </div>
+  <div class="summary-card ai">
+    <div class="kicker">Quality floor</div>
+    <div class="value">{{ default_min_quality }}</div>
+    <div class="meta">minimum acceptable score</div>
+  </div>
+  <div class="summary-card">
+    <div class="kicker">Monthly volume</div>
+    <div class="value">{{ default_volume }}</div>
+    <div class="meta">tasks per month</div>
+  </div>
+</div>
+
 <div class="card">
   <div class="grid-2">
     <div class="field">

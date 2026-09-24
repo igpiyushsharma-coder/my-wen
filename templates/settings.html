@@ -7,6 +7,24 @@
   <p>These values drive every recommendation. Changing them here changes future analysis results — nothing is hidden or hardcoded.</p>
 </div>
 
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="kicker">Weight mix</div>
+    <div class="value">{{ settings['weights']['cost'] + settings['weights']['time'] + settings['weights']['quality'] }}</div>
+    <div class="meta">combined scoring total</div>
+  </div>
+  <div class="summary-card ai">
+    <div class="kicker">Quality floor</div>
+    <div class="value">{{ settings['min_quality_threshold'] }}</div>
+    <div class="meta">minimum acceptable rating</div>
+  </div>
+  <div class="summary-card">
+    <div class="kicker">Monthly volume</div>
+    <div class="value">{{ settings['default_monthly_volume'] }}</div>
+    <div class="meta">tasks per month</div>
+  </div>
+</div>
+
 <div class="card" style="max-width: 560px;">
   <h3>Scoring weights</h3>
   <p>Must add up to 1.0 (100%). Cost and time favor the cheaper/faster option; quality favors the higher-rated one.</p>

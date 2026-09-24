@@ -7,6 +7,24 @@
   <p>Upload your own human or AI performance records as CSV, or check how much sample data is currently loaded per task.</p>
 </div>
 
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="kicker">Tasks</div>
+    <div class="value">{{ tasks|length }}</div>
+    <div class="meta">tracked datasets</div>
+  </div>
+  <div class="summary-card ai">
+    <div class="kicker">Human rows</div>
+    <div class="value">{{ tasks|sum(attribute='human_count') }}</div>
+    <div class="meta">uploaded records</div>
+  </div>
+  <div class="summary-card">
+    <div class="kicker">AI rows</div>
+    <div class="value">{{ tasks|sum(attribute='ai_count') }}</div>
+    <div class="meta">imported records</div>
+  </div>
+</div>
+
 <div class="section">
   <div class="section-title"><h2>Current data by task</h2></div>
   <div class="card">

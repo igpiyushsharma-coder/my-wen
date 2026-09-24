@@ -1,11 +1,11 @@
 // dashboard.js
 // Fetches /api/dashboard-data and fills in the metric strip + 4 charts.
 
-const AI_COLOR = "#2563EB";
-const HUMAN_COLOR = "#64748B";
-const HYBRID_COLOR = "#E38B28";
-const INSUFFICIENT_COLOR = "#D1495B";
-const GRID_COLOR = "rgba(100, 116, 139, 0.12)";
+const AI_COLOR = "#6F7352";
+const HUMAN_COLOR = "#2B2925";
+const HYBRID_COLOR = "#A6533B";
+const INSUFFICIENT_COLOR = "#8C8175";
+const GRID_COLOR = "rgba(59, 48, 40, 0.12)";
 
 const sharedChartOptions = {
   responsive: true,
@@ -60,7 +60,7 @@ function comparisonDatasets(humanLabel, aiLabel, humanData, aiData, useAiAxis = 
       label: aiLabel,
       data: aiData,
       backgroundColor: AI_COLOR,
-      borderColor: "#1748B5",
+      borderColor: "#555A3D",
       borderWidth: 2,
       borderRadius: 6,
       borderSkipped: false,
@@ -89,7 +89,12 @@ async function loadDashboard() {
     `₹${data.estimated_monthly_savings.toLocaleString("en-IN")}`,
     `₹${data.estimated_yearly_savings.toLocaleString("en-IN")}`,
   ];
-  metrics.forEach((el, i) => { el.textContent = values[i]; });
+  metrics.forEach((el, i) => {
+    el.textContent = values[i];
+    el.classList.remove("is-loaded");
+    void el.offsetWidth;
+    el.classList.add("is-loaded");
+  });
 
   document.getElementById("volume-note").textContent =
     `Savings figures assume ${data.assumed_monthly_volume_per_task.toLocaleString("en-IN")} tasks/month per task (set in Settings). Run Analysis for a task-specific volume.`;

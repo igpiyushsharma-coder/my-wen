@@ -338,7 +338,7 @@ def api_settings():
     if "min_quality_threshold" in body:
         settings["min_quality_threshold"] = float(body["min_quality_threshold"])
     if "default_monthly_volume" in body:
-        settings["default_monthly_volume"] = int(body["default_monthly_volume"])
+            settings["default_monthly_volume"] = int(body["default_monthly_volume"])
 
     config.save_settings(settings)
     return jsonify({"message": "Settings updated.", "settings": settings})

@@ -28,12 +28,11 @@ the code, so it always works offline. This satisfies the spec's
 "must work without an external AI API" requirement by construction
 rather than needing a special toggle.
 """
-
 from flask import Flask, render_template, request, jsonify, Response
-import sqlite3
-import os
-import json
 import csv
+import json
+import os
+import sqlite3
 from io import StringIO
 
 from services.comparison_engine import (

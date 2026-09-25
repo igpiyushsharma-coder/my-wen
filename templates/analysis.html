@@ -50,8 +50,41 @@
 </div>
 
 <div id="result-container"></div>
+
+<div class="card" style="margin-top: 20px;">
+  <h3 style="margin-top:0;">Recent analysis history</h3>
+  <div id="history-container" class="note">Loading recent runs…</div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+<script>
+async function loadHistory() {
+  const container = document.getElementById('history-container');
+  try {
+    const res = await fetch('/api/history');
+    const data = await res.json();
+    const entries = data.history || [];
+    if (!entries.length) {
+      container.innerHTML = '<span class="note">No analyses yet. Run one to create a history.</span>';
+      return;
+    }
+
+    container.innerHTML = entries.map(item => `
+      <div style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.08);">
+        <strong>${item.task_name}</strong>
+        <span style="margin-left:8px;">• ${item.recommendation}</span>
+        <span style="float:right; font-size:12px; color:var(--ink-soft);">${new Date(item.created_at).toLocaleString()}</span>
+        <div class="note">Volume: ${item.monthly_volume} | Quality floor: ${item.min_quality}</div>
+        <a href="/api/export/${item.task_id}" target="_blank" style="font-size:12px; margin-top:6px; display:inline-block;">Download CSV</a>
+      </div>
+    `).join('');
+  } catch (error) {
+    container.innerHTML = '<span class="note">History unavailable right now.</span>';
+  }
+}
+
+loadHistory();
+</script>
 {% endblock %}

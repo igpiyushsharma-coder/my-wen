@@ -72,3 +72,19 @@ CREATE TABLE IF NOT EXISTS task_results (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
+
+-- ANALYSIS_HISTORY: stores a compact summary of each analysis run so the
+-- app can show recent recommendations and let users export reports without
+-- rerunning the calculation. This is intentionally lightweight and safe for
+-- offline demo deployments.
+CREATE TABLE IF NOT EXISTS analysis_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL,
+    task_name TEXT NOT NULL,
+    recommendation TEXT NOT NULL,
+    monthly_volume INTEGER NOT NULL,
+    min_quality REAL NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    summary_json TEXT,
+    FOREIGN KEY (task_id) REFERENCES tasks(id)
+);

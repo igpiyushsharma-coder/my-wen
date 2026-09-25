@@ -28,10 +28,12 @@ the code, so it always works offline. This satisfies the spec's
 "must work without an external AI API" requirement by construction
 rather than needing a special toggle.
 """
-
-from flask import Flask, render_template, request, jsonify
-import sqlite3
+from flask import Flask, render_template, request, jsonify, Response
+import csv
+import json
 import os
+import sqlite3
+from io import StringIO
 
 from services.comparison_engine import (
     compute_scores_for_all_tasks, compute_scores_for_task,
@@ -44,11 +46,25 @@ import config
 
 app = Flask(__name__)
 
-DB_PATH = "database/app.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
+
+
+def ensure_db_schema():
+    """Creates/repairs the SQLite schema if the database is missing tables."""
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        with open(os.path.join(BASE_DIR, "database", "schema.sql"), "r", encoding="utf-8") as f:
+            conn.executescript(f.read())
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def get_db():
     """Opens a new database connection for this request."""
+    ensure_db_schema()
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -198,6 +214,37 @@ def _savings_for(conn, task_id, difficulty, monthly_volume):
     )
 
 
+def _record_analysis_history(conn, task_id, task_name, overall_rec, monthly_volume, min_quality):
+    """Stores a lightweight summary of the analysis run to support recent-history UI."""
+    if overall_rec.get("raw_averages") is None:
+        return
+
+    summary = {
+        "task_name": task_name,
+        "recommendation": overall_rec.get("recommendation"),
+        "monthly_volume": monthly_volume,
+        "min_quality": min_quality,
+        "final_scores": overall_rec.get("final_scores"),
+        "raw_averages": overall_rec.get("raw_averages"),
+    }
+
+    conn.execute(
+        """
+        INSERT INTO analysis_history (task_id, task_name, recommendation, monthly_volume, min_quality, summary_json)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            task_id,
+            task_name,
+            overall_rec.get("recommendation"),
+            monthly_volume,
+            min_quality,
+            json.dumps(summary, default=str),
+        ),
+    )
+    conn.commit()
+
+
 @app.route("/api/analyze", methods=["POST"])
 def api_analyze():
     """
@@ -236,6 +283,7 @@ def api_analyze():
     # --- Overall (blended) view ---
     overall_rec = build_recommendation(tid, tname, conn, weights=weights, min_quality=min_quality)
     overall_savings = _savings_for(conn, tid, None, monthly_volume)
+    _record_analysis_history(conn, tid, tname, overall_rec, monthly_volume, min_quality)
 
     if overall_rec["raw_averages"] is not None and monthly_volume > 0:
         conn.execute(
@@ -343,7 +391,118 @@ def api_settings():
     return jsonify({"message": "Settings updated.", "settings": settings})
 
 
+@app.route("/api/history")
+def api_history():
+    """Returns recent analysis history for the dashboard or demo reporting."""
+    conn = get_db()
+    rows = conn.execute(
+        """
+        SELECT id, task_id, task_name, recommendation, monthly_volume, min_quality, created_at, summary_json
+        FROM analysis_history
+        ORDER BY created_at DESC
+        LIMIT 10
+        """
+    ).fetchall()
+    conn.close()
+
+    history = []
+    for row in rows:
+        entry = {
+            "id": row["id"],
+            "task_id": row["task_id"],
+            "task_name": row["task_name"],
+            "recommendation": row["recommendation"],
+            "monthly_volume": row["monthly_volume"],
+            "min_quality": row["min_quality"],
+            "created_at": row["created_at"],
+        }
+        if row["summary_json"]:
+            try:
+                entry["summary"] = json.loads(row["summary_json"])
+            except Exception:
+                entry["summary"] = {}
+        history.append(entry)
+
+    return jsonify({"history": history})
+
+
+@app.route("/api/report/<int:task_id>")
+def api_report(task_id):
+    """Exports one task's latest analysis summary as a simple JSON report."""
+    conn = get_db()
+    row = conn.execute(
+        """
+        SELECT task_name, recommendation, monthly_volume, min_quality, created_at, summary_json
+        FROM analysis_history
+        WHERE task_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+        """,
+        (task_id,),
+    ).fetchone()
+    conn.close()
+
+    if not row:
+        return jsonify({"error": "No analysis report found for this task."}), 404
+
+    body = {"task_name": row["task_name"], "recommendation": row["recommendation"], "monthly_volume": row["monthly_volume"], "min_quality": row["min_quality"], "created_at": row["created_at"]}
+    if row["summary_json"]:
+        try:
+            body["summary"] = json.loads(row["summary_json"])
+        except Exception:
+            body["summary"] = {}
+    return jsonify(body)
+
+
+@app.route("/api/export/<int:task_id>")
+def api_export_report(task_id):
+    """Returns CSV export of the latest saved analysis for a task."""
+    conn = get_db()
+    row = conn.execute(
+        """
+        SELECT task_name, recommendation, monthly_volume, min_quality, created_at, summary_json
+        FROM analysis_history
+        WHERE task_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+        """,
+        (task_id,),
+    ).fetchone()
+    conn.close()
+
+    if not row:
+        return jsonify({"error": "No analysis report found for this task."}), 404
+
+    summary = {}
+    if row["summary_json"]:
+        try:
+            summary = json.loads(row["summary_json"])
+        except Exception:
+            summary = {}
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["task_name", "recommendation", "monthly_volume", "min_quality", "created_at"])
+    writer.writerow([row["task_name"], row["recommendation"], row["monthly_volume"], row["min_quality"], row["created_at"]])
+    writer.writerow([])
+    writer.writerow(["field", "value"])
+    for key, value in summary.items():
+        if isinstance(value, dict):
+            for sub_key, sub_value in value.items():
+                writer.writerow([f"{key}.{sub_key}", sub_value])
+        else:
+            writer.writerow([key, value])
+
+    csv_data = output.getvalue()
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={row['task_name']}_analysis_report.csv"},
+    )
+
+
 if __name__ == "__main__":
+    ensure_db_schema()
     if not os.path.exists(DB_PATH):
-        print("No database found. Run setup_database.py first!.")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+        print("No database found. Run setup_database.py first!.")
     app.run(debug=True,port=5000,host='0.0.0.0')

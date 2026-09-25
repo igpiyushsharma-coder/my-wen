@@ -55,7 +55,21 @@ function savingsHtml(savings) {
   `;
 }
 
-function resultCardHtml(title, result, isOverall) {
+function businessInsight(result) {
+  if (!result || !result.recommendation) return "This recommendation is based on the current cost, time, and quality trade-off.";
+  if (result.recommendation === "AI RECOMMENDED") {
+    return "AI is currently cheaper and faster while staying above the quality threshold, making it the most efficient option for this workload.";
+  }
+  if (result.recommendation === "HUMAN RECOMMENDED") {
+    return "Human handling is preferred because AI quality falls below the minimum threshold or the quality-weighted score does not justify automation.";
+  }
+  if (result.recommendation === "HYBRID RECOMMENDED") {
+    return "A human-plus-AI hybrid is the safest balance: automate the repetitive portion while keeping human review where quality matters most.";
+  }
+  return "There is not enough reliable data yet to make a confident recommendation; more task samples are needed before deployment.";
+}
+
+function resultCardHtml(title, result, isOverall, taskId) {
   const style = REC_STYLE[result.recommendation] || REC_STYLE["INSUFFICIENT_DATA"];
 
   if (!result.raw_averages) {
@@ -70,6 +84,7 @@ function resultCardHtml(title, result, isOverall) {
   const a = result.raw_averages.ai;
   const proportionNote = (!isOverall && result.proportion !== undefined)
     ? `<span class="note" style="margin-left:8px;">(~${Math.round(result.proportion * 100)}% of sample volume)</span>` : "";
+  const exportLink = taskId ? `<a href="/api/export/${taskId}" target="_blank" style="display:inline-block; margin-top:12px; font-size:12px; font-weight:600;">Download CSV report</a>` : "";
 
   return `
     <div class="card result-panel ${style.cls}" style="margin-bottom:16px;">
@@ -79,6 +94,7 @@ function resultCardHtml(title, result, isOverall) {
       </div>
       ${proportionNote}
       <p class="explanation">${result.explanation}</p>
+      <p class="note" style="margin-top:10px;"><strong>Business insight:</strong> ${businessInsight(result)}</p>
 
       <table style="margin-top:14px;">
         <thead><tr><th></th><th class="num">Avg. time</th><th class="num">Avg. cost</th><th class="num">Avg. quality</th><th class="num">Score</th></tr></thead>
@@ -90,14 +106,15 @@ function resultCardHtml(title, result, isOverall) {
 
       ${qualityBreakdownHtml(result.quality_breakdown)}
       ${savingsHtml(result.savings)}
+      ${exportLink}
     </div>`;
 }
 
-function renderResult(data) {
+function renderResult(data, taskId) {
   const container = document.getElementById("result-container");
 
   let html = `<div class="section"><div class="section-title"><h2>Overall (all difficulty levels blended)</h2></div>`;
-  html += resultCardHtml(data.task_name + " — overall", data.overall, true);
+  html += resultCardHtml(data.task_name + " — overall", data.overall, true, taskId);
   html += `</div>`;
 
   const segmentKeys = Object.keys(data.segments || {});
@@ -107,7 +124,7 @@ function renderResult(data) {
     html += `<div class="grid-2">`;
     for (const key of segmentKeys) {
       const label = key.charAt(0).toUpperCase() + key.slice(1);
-      html += resultCardHtml(label + " cases", data.segments[key], false);
+      html += resultCardHtml(label + " cases", data.segments[key], false, taskId);
     }
     html += `</div></div>`;
   }
@@ -128,20 +145,27 @@ async function runAnalysis() {
 
   container.innerHTML = '<p class="note">Running analysis…</p>';
 
-  const res = await fetch("/api/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ task_id: taskId, monthly_volume: monthlyVolume, min_quality: minQuality }),
-  });
+  try {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task_id: taskId, monthly_volume: monthlyVolume, min_quality: minQuality }),
+    });
 
-  const data = await res.json();
+    const contentType = res.headers.get("content-type") || "";
+    const data = contentType.includes("application/json")
+      ? await res.json()
+      : { error: await res.text() };
 
-  if (!res.ok) {
-    container.innerHTML = `<div class="status-msg err">${data.error || "Something went wrong."}</div>`;
-    return;
+      if (!res.ok) {
+      throw new Error(data.error || `Request failed with status ${res.status}`);
+    }
+
+      renderResult(data, taskId);
+  } catch (error) {
+    console.error("Analysis request failed:", error);
+    container.innerHTML = `<div class="status-msg err">Analysis failed: ${error.message}</div>`;
   }
-
-  renderResult(data);
 }
 
 preselectTaskFromUrl();

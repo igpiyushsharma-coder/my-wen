@@ -17,7 +17,8 @@ exist yet (first run), we fall back to these defaults and create it.
 import json
 import os
 
-SETTINGS_PATH = "settings.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SETTINGS_PATH = os.path.join(BASE_DIR, "settings.json")
 
 DEFAULTS = {
     "weights": {

@@ -128,20 +128,27 @@ async function runAnalysis() {
 
   container.innerHTML = '<p class="note">Running analysis…</p>';
 
-  const res = await fetch("/api/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ task_id: taskId, monthly_volume: monthlyVolume, min_quality: minQuality }),
-  });
+  try {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task_id: taskId, monthly_volume: monthlyVolume, min_quality: minQuality }),
+    });
 
-  const data = await res.json();
+    const contentType = res.headers.get("content-type") || "";
+    const data = contentType.includes("application/json")
+      ? await res.json()
+      : { error: await res.text() };
 
-  if (!res.ok) {
-    container.innerHTML = `<div class="status-msg err">${data.error || "Something went wrong."}</div>`;
-    return;
+    if (!res.ok) {
+      throw new Error(data.error || `Request failed with status ${res.status}`);
+    }
+
+    renderResult(data);
+  } catch (error) {
+    console.error("Analysis request failed:", error);
+    container.innerHTML = `<div class="status-msg err">Analysis failed: ${error.message}</div>`;
   }
-
-  renderResult(data);
 }
 
 preselectTaskFromUrl();

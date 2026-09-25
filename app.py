@@ -44,7 +44,8 @@ import config
 
 app = Flask(__name__)
 
-DB_PATH = "database/app.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
 
 
 def get_db():
